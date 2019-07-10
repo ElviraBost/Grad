@@ -1,0 +1,10 @@
+sudo yum update 
+sudo amazon-linux-extras install ansible2 -y
+sudo yum install java-1.8.0-openjdk -y
+sudo yum install -y git
+sudo yum install maven -y
+#Jenkins
+sudo wget -O /etc/yum.repos.d/jenkins.repo http://pkg.jenkins-ci.org/redhat/jenkins.repo
+sudo rpm --import https://pkg.jenkins.io/redhat/jenkins.io.key
+sudo yum install jenkins -y
+sudo service jenkins start 
