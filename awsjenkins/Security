@@ -1,0 +1,26 @@
+Allow inbound HTTP access from anywhere
+
+Allow inbound SSH traffic from your computer's public IP address so
+that you can connect to your instance
+
+To create and configure your security group:
+1. Decide who may access your instance, for example, a single computer or all trusted computers on a network. For this tutorial, you can use the public IP address of your computer.
+ To find your IP address, use the checkip service from AWS3 or search for the phrase "what is my IP address" in any Internet search engine.
+If you are connecting through an ISP or from behind your firewall  without a static IP address, you will need to find the range of IP addresses used by client computers.
+ If you don't know this address range, you can use 0.0.0.0/0 for this tutorial. However, this is unsafe for production environments because it allows everyone to access your instance using SSH.
+
+2. Open the Amazon EC2 console at https://console.aws.amazon.com/ec2/.
+3. In the navigation bar, verify that US West (Oregon) is the selected
+region.
+4. In the left-hand navigation bar, choose Security Groups, and then click
+Create Security Group.
+5. In Security group name enter WebServerSG and provide a description.
+6. Choose your VPC from the list.
+7. On the Inbound tab, add the rules as follows:
+
+a. Click Add Rule, and then choose SSH from the Type list. Under Source, select Custom and in the text box enter the public IP
+address range that you decided on in step 1.
+b. Click Add Rule, and then choose HTTP from the Type list.
+c. Click Add Rule, and then choose Custom TCP Rule from the
+Type list. Under Port Range enter 8080.
+8. Click Create. 

@@ -1,0 +1,41 @@
+sudo yum update 
+sudo amazon-linux-extras install ansible2 -y
+sudo yum install java-1.8.0-openjdk -y
+sudo yum install -y git
+sudo yum install maven -y
+#Jenkins
+sudo wget -O /etc/yum.repos.d/jenkins.repo http://pkg.jenkins-ci.org/redhat/jenkins.repo
+sudo rpm --import https://pkg.jenkins.io/redhat/jenkins.io.key
+sudo yum install jenkins -y
+sudo service jenkins start 
+sudo amazon-linux-extras install docker
+sudo systemctl docker start
+sudo service docker start
+sudo usermod -a -G docker ec2-user
+
+#JFROG
+docker pull docker.bintray.io/jfrog/artifactory-oss:4.16.0
+docker run -d --name <CONTAINER_NAME> -p 8081:8081 <VOLUME_MOUNTS> docker.bintray.io/jfrog/artifactory-oss:4.16.0
+
+[[# Remove java 7
+sudo yum remove -y java
+
+# Install basic packages
+sudo yum install -y git
+
+# Download and install java 8
+wget --no-cookies --no-check-certificate --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" "http://download.oracle.com/otn-pub/java/jdk/8u131-b11/d54c1d3a095b4ff2b6607d096fa80163/jdk-8u131-linux-x64.tar.gz"
+tar -xzvf jdk-8u131-linux-x64.tar.gz
+rm -rf jdk-8u131-linux-x64.tar.gz
+
+# Configure JAVA_HOME
+sudo vim ~/.bashrc
+
+alias cls='clear'
+
+export JAVA_HOME=~/jdk1.8.0_131
+export JRE_HOME=~/jdk1.8.0_131/jre
+export PATH=$PATH:~/jdk1.8.0_131/bin:/~/jdk1.8.0_131/jre/bin
+
+source ~/.bashrc 
+java -version]]

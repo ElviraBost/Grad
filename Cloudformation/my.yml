@@ -1,0 +1,144 @@
+---
+AWSTemplateFormatVersion: '2019-07-23'
+Description: 'Create template for CI/CD'
+Parametrs:
+  EnvirontName:
+    Description: 'An enviroment name that will be prefixed to resourses names'
+    Type: String
+  ManagedPolicyArns:
+    Description: 'Optional comma-delimited list of IAM managed policy ARNs to attach to the instance''s IAM role'
+    Type: String
+    Default: ''
+  VpcCIDR:
+    Description: 'Please enter the Ip range (CIDR notation) for this VPC'
+    Type: String
+    MinLength: 9
+    MaxLength: 18
+    Default: 10.1.0.0/16
+    AllowedPattern: (\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})
+    ConstraintDescription: 'must be a valid IP CIDR range of the form x.x.x.x/x.'
+  
+  PublicSubnetNameCIDR:
+    Description: 'Plese enter the Ip range (CIDR notation) for the public subnet' 
+    Type: String
+    Default: 10.192.0.0/16
+    AllowedPattern: (\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})
+    ConstraintDescription: 'must be a valid IP CIDR range of the form x.x.x.x/x.'
+  
+  SSHLocation:
+    Descriotion: 'The Ip adress range that can  be used  to SSH to the EC2 instances'
+    Type: String
+    MinLength: 9
+    MaxLength: 18
+    Default: 0.0.0.0/0
+    AllowedPattern: (\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})
+    ConstraintDescription: 'must be a valid IP CIDR range of the form x.x.x.x/x.'
+  
+  InstanceType:
+    Descriotion: 'CI/CD instances' 
+    Type: String
+    Default: t2.micro
+
+Resources: 
+  VPC: 
+    Type: 'AWS::EC2::VPC'
+    Properties: 
+      CidrBlock: 
+        Ref: VpcCIDR 
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        Key: Name
+        Value: 
+          Ref: EnvirontName
+
+  igwName:
+    Type: 'AWS::EC2::InternetGateway'
+    Properties:
+      Tags:
+        - Key: Name
+          Value: 
+            Ref: EnvirontName
+
+  AttachGateway:
+    Type: 'AWS::EC2::VPCGatewayAttachment'
+    Properties:
+      VpcId: 
+        Ref: VPC
+      InternetGatewayId:
+        Ref: igwName 
+  
+  PublicSubnet:
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      VpcId: 
+        Ref: VPC
+      CidrBlock: 
+        Ref: PublicSubnetNameCIDR
+  
+  PublicRouteTable:
+    Type: 'AWS::"AWS::EC2::RouteTable'
+    Properties: 
+      VpcId: 
+        Ref: VPC 
+    Tags: 
+      Key: Name
+      Value: 'A public'  
+
+  PublicRoute: 
+      Type: 'AWS::EC2::Route'
+      Properties: 
+        RouteTableId: 
+          Ref: PublicRouteTable
+        DestinationCidrBlock: 0.0.0.0/0
+        GatewayId:
+          Ref: igwName
+  
+  PublicRouteAssosiate:
+    Type: 'AWS::EC2::SubnetRouteTableAssociation'
+    Properties:
+      RouteTableId: 
+        Ref: PublicRouteTable
+      SubnetId:
+        Ref: PublicSubnet      
+  
+  Tools:
+    Type: 'AWS::EC2:Instance'
+    CidrBlock: 
+      Ref: VpcCIDR 
+    Properties:
+      InstanceType: 
+        Ref: InstanceType
+      ImageId: ami-006fd2260be98254c 
+      KeyName: ry
+      NetworkInterfaces:
+        DeleteOnTermination: true
+        DeviceIndex: 0
+        SubnetId: 
+          Ref: PublicSubnet
+      SecurityGroups: 
+        Ref: WorkSecucurity
+      UserData: 
+           Fn::!Base64:
+             Fn::Sub: 
+               #!/bin/bash -ex
+               yum update -y
+               yum install java-1.8.0-openjdk -y
+               amazon-linux-extras install -y ansible2
+               yum install -y git
+               git config --global user.name "Name"
+               git config --global user.email "Email"
+               git clone git@github.com:ElviraBost/Grad.git
+
+  WorkSecucurity:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      VpcId:
+        Ref: VPC
+      GroupDescription: 'for the app nodes that allow ssh, htttp and docker ports'
+      SecurityGroupIngress:
+        IpProtocol: tcp
+        FromPort: 22
+        ToPort: 22
+        cidrIp: 
+          Ref: SSHLocation
