@@ -1,8 +1,44 @@
 sudo apt-get update
-sudo apt install openjdk-8-jre-headless
+sudo apt install openjdk-8-jre-headless -y
 
 wget -q -O - https://pkg.jenkins.io/debian/jenkins.io.key | sudo apt-key add -
 sudo sh -c 'echo deb http://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list' -y
 sudo apt update 
 sudo apt install jenkins -y
 sudo service jenkins start 
+
+sudo apt update
+sudo apt install apt-transport-https ca-certificates curl software-properties-common  -y
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
+sudo apt update
+apt-cache policy docker-ce 
+sudo apt install docker-ce -y
+sudo systemctl status docker
+
+sudo apt update
+sudo apt install software-properties-common
+sudo apt-add-repository ppa:ansible/ansible
+sudo apt install ansible -y
+cat ~/.ssh/id_rsa.pub
+
+
+Чтобы не вводить sudo каждый раз при запуске команды docker, добавьте имя своего пользователя в группу docker:
+
+sudo usermod -aG docker ${USER}
+Для применения этих изменений в составе группы необходимо разлогиниться и снова залогиниться на сервере или задать следующую команду:
+
+su - ${USER}
+Для продолжения работы необходимо ввести пароль пользователя.
+
+Убедиться, что пользователь добавлен в группу docker можно следующим образом:
+
+
+newgrp docker 
+
+#Tomcat
+sudo groupadd tomcat
+sudo useradd -s /bin/false -g tomcat -d /opt/tomcat tomcat
+cd /tmpcurl -O http://mirror.cc.columbia.edu/pub/software/apache/tomcat/tomcat-9/v9.0.10/bin/apache-tomcat-9.0.10.tar.gz
+sudo mkdir /opt/tomcat
+

@@ -77,7 +77,7 @@ Resources:
         Ref: PublicSubnetNameCIDR
   
   PublicRouteTable:
-    Type: 'AWS::"AWS::EC2::RouteTable'
+    Type: 'AWS::AWS::EC2::RouteTable'
     Properties: 
       VpcId: 
         Ref: VPC 
@@ -102,43 +102,4 @@ Resources:
       SubnetId:
         Ref: PublicSubnet      
   
-  Tools:
-    Type: 'AWS::EC2:Instance'
-    CidrBlock: 
-      Ref: VpcCIDR 
-    Properties:
-      InstanceType: 
-        Ref: InstanceType
-      ImageId: ami-006fd2260be98254c 
-      KeyName: ry
-      NetworkInterfaces:
-        DeleteOnTermination: true
-        DeviceIndex: 0
-        SubnetId: 
-          Ref: PublicSubnet
-      SecurityGroups: 
-        Ref: WorkSecucurity
-      UserData: 
-           Fn::!Base64:
-             Fn::Sub: 
-               #!/bin/bash -ex
-               yum update -y
-               yum install java-1.8.0-openjdk -y
-               amazon-linux-extras install -y ansible2
-               yum install -y git
-               git config --global user.name "Name"
-               git config --global user.email "Email"
-               git clone git@github.com:ElviraBost/Grad.git
-
-  WorkSecucurity:
-    Type: 'AWS::EC2::SecurityGroup'
-    Properties:
-      VpcId:
-        Ref: VPC
-      GroupDescription: 'for the app nodes that allow ssh, htttp and docker ports'
-      SecurityGroupIngress:
-        IpProtocol: tcp
-        FromPort: 22
-        ToPort: 22
-        cidrIp: 
-          Ref: SSHLocation
+  
