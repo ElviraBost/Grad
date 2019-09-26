@@ -42,3 +42,7 @@ sudo useradd -s /bin/false -g tomcat -d /opt/tomcat tomcat
 cd /tmpcurl -O http://mirror.cc.columbia.edu/pub/software/apache/tomcat/tomcat-9/v9.0.10/bin/apache-tomcat-9.0.10.tar.gz
 sudo mkdir /opt/tomcat
 
+
+#SubSystem Linux
+https://medium.com/@sebagomez/installing-the-docker-client-on-ubuntus-windows-subsystem-for-linux-612b392a44c4
+
